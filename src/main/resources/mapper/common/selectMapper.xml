@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.common.SelectMapper">
+
+    <select id="selecteData" resultType="kr.co.chunjae.ocrplatform.dto.common.SubjectDTO">
+
+        SELECT ID, NAME AS SUBJECT
+        FROM  tb_subject
+        WHERE PARENT_ID = #{id}
+    </select>
+
+
+    <select id="loadAreas" resultType="kr.co.chunjae.ocrplatform.dto.common.AreaDTO">
+        SELECT ID, NAME AS AREA
+        FROM  tb_subject
+        WHERE DEPTH = 1
+    </select>
+
+
+</mapper>

@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.ocrstate.OcrManageMapper">
+
+    <select id="ocrListPage" resultType="kr.co.chunjae.ocrplatform.dto.ocrstate.OcrListResponseDTO">
+        SELECT PAPER.ID,
+               PAPER.PAST_YEAR,
+               CASE PAPER.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END EXAM_TYPE,
+               PAPER.PAST_MONTH,
+               PAPER.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPER.EXAM_NAME,
+               IFNULL(MEMBER.NAME, '-') as NAME,
+               PAPER.CREATE_DATE,
+               PAPER.ITEM_CNT,
+               IFNULL(OCR.OCR_OK, 0) as OCR_OK
+        FROM tb_paper PAPER
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPER.SUBJECT_ID = SUBJECT.ID
+        LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+        ON PAPER.ID = OCR.PAPER_ID
+        LEFT JOIN tb_member MEMBER
+        ON PAPER.WORKER = MEMBER.ID
+        WHERE 1=1
+        <choose>
+            <when test="params.workStatus == 'unfinish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </when>
+            <when test="params.workStatus == 'finish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) = 1
+            </when>
+            <otherwise>
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </otherwise>
+        </choose>
+        <if test="params.year != null and params.year != ''">
+            AND PAPER.PAST_YEAR = #{params.year}
+        </if>
+        <if test="params.month != null and params.month != ''">
+            AND PAPER.PAST_MONTH = #{params.month}
+        </if>
+        <if test="params.grade != null and params.grade != ''">
+            AND PAPER.GRADE = #{params.grade}
+        </if>
+        <if test="params.examTypes != null and !params.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="params.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="params.searchOption == 'all'">
+            AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{params.searchText}, '%')
+            OR NAME LIKE CONCAT('%', #{params.searchText}, '%'))
+        </if>
+        <if test="params.searchOption == 'paperName'">
+            AND PAPER.EXAM_NAME LIKE CONCAT('%', #{params.searchText}, '%')
+        </if>
+        <if test="params.searchOption == 'registrant'">
+            AND NAME LIKE CONCAT('%', #{params.searchText}, '%')
+        </if>
+        <if test="params.area != null and params.area != ''">
+            AND SUBJECT.AREA = #{params.area}
+        </if>
+        <if test="params.subject != null and params.subject != ''">
+            AND SUBJECT.SUBJECT = #{params.subject}
+        </if>
+        ORDER BY PAPER.ID DESC
+        LIMIT #{params.pageSize} OFFSET #{params.offset}
+    </select>
+
+
+    <select id="totalCntOcr" resultType="kr.co.chunjae.ocrplatform.dto.common.TotalCounts">
+        SELECT COUNT(*) as TOTAL_COUNT
+        FROM(SELECT PAPER.ID,
+                    PAPER.PAST_YEAR,
+                    CASE PAPER.EXAM_TYPE
+                    WHEN 1 THEN '모의평가'
+                    WHEN 2 THEN '학력평가'
+                    ELSE '수능'
+                    END EXAM_TYPE,
+                    PAPER.PAST_MONTH,
+                    PAPER.GRADE,
+                    SUBJECT.AREA,
+                    SUBJECT.SUBJECT,
+                    PAPER.EXAM_NAME,
+                    IFNULL(MEMBER.NAME, '-') as NAME,
+                    PAPER.CREATE_DATE,
+                    PAPER.ITEM_CNT,
+                    IFNULL(OCR.OCR_OK, 0) as OCR_OK
+                    FROM tb_paper PAPER
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPER.SUBJECT_ID = SUBJECT.ID
+        LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+        ON PAPER.ID = OCR.PAPER_ID
+        LEFT JOIN tb_member MEMBER
+        ON PAPER.WORKER = MEMBER.ID
+        WHERE 1=1
+        <choose>
+            <when test="data.workStatus == 'unfinish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </when>
+            <when test="data.workStatus == 'finish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) = 1
+            </when>
+            <otherwise>
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </otherwise>
+        </choose>
+        <if test="data.year != null and data.year != ''">
+            AND PAPER.PAST_YEAR = #{data.year}
+        </if>
+        <if test="data.month != null and data.month != ''">
+            AND PAPER.PAST_MONTH = #{data.month}
+        </if>
+        <if test="data.grade != null and data.grade != ''">
+            AND PAPER.GRADE = #{data.grade}
+        </if>
+        <if test="data.examTypes != null and !data.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="data.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="data.searchOption == 'all'">
+            AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{data.searchText}, '%')
+            OR NAME LIKE CONCAT('%', #{data.searchText}, '%'))
+        </if>
+        <if test="data.searchOption == 'paperName'">
+            AND PAPER.EXAM_NAME LIKE CONCAT('%', #{data.searchText}, '%')
+        </if>
+        <if test="data.searchOption == 'registrant'">
+            AND NAME LIKE CONCAT('%', #{data.searchText}, '%')
+        </if>
+        <if test="data.area != null and data.area != ''">
+            AND SUBJECT.AREA = #{data.area}
+        </if>
+        <if test="data.subject != null and data.subject != ''">
+            AND SUBJECT.SUBJECT = #{data.subject}
+        </if>
+        ) AS listOcrF
+    </select>
+
+    <select id="ocrExcelData" resultType="kr.co.chunjae.ocrplatform.dto.ocrstate.OcrExcelSaveDTO">
+        SELECT PAPER.ID,
+               PAPER.PAST_YEAR,
+               CASE PAPER.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END EXAM_TYPE,
+               PAPER.PAST_MONTH,
+               PAPER.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPER.EXAM_NAME,
+               IFNULL(MEMBER.NAME, '-') as NAME,
+               PAPER.CREATE_DATE,
+               PAPER.ITEM_CNT,
+               IFNULL(OCR.OCR_OK, 0) as OCR_OK
+        FROM tb_paper PAPER
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPER.SUBJECT_ID = SUBJECT.ID
+        LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+        ON PAPER.ID = OCR.PAPER_ID
+        LEFT JOIN tb_member MEMBER
+        ON PAPER.WORKER = MEMBER.ID
+        WHERE 1=1
+        <choose>
+            <when test="excelData.workStatus == 'unfinish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </when>
+            <when test="excelData.workStatus == 'finish'">
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) = 1
+            </when>
+            <otherwise>
+                AND IFNULL(OCR_OK / PAPER.ITEM_CNT, 0) != 1
+            </otherwise>
+        </choose>
+        <if test="excelData.year != null and excelData.year != ''">
+            AND PAPER.PAST_YEAR = #{excelData.year}
+        </if>
+        <if test="excelData.month != null and excelData.month != ''">
+            AND PAPER.PAST_MONTH = #{excelData.month}
+        </if>
+        <if test="excelData.grade != null and excelData.grade != ''">
+            AND PAPER.GRADE = #{excelData.grade}
+        </if>
+        <if test="excelData.examTypes != null and !excelData.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="excelData.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="excelData.searchOption == 'all'">
+            AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{excelData.searchText}, '%')
+            OR NAME LIKE CONCAT('%', #{excelData.searchText}, '%'))
+        </if>
+        <if test="excelData.searchOption == 'paperName'">
+            AND PAPER.EXAM_NAME LIKE CONCAT('%', #{excelData.searchText}, '%')
+        </if>
+        <if test="excelData.searchOption == 'registrant'">
+            AND NAME LIKE CONCAT('%', #{excelData.searchText}, '%')
+        </if>
+        <if test="excelData.area != null and excelData.area != ''">
+            AND SUBJECT.AREA = #{excelData.area}
+        </if>
+        <if test="excelData.subject != null and excelData.subject != ''">
+            AND SUBJECT.SUBJECT = #{excelData.subject}
+        </if>
+        ORDER BY PAPER.ID
+    </select>
+
+    <update id="updateWorkers" parameterType="java.util.Map">
+        UPDATE tb_paper SET WORKER = #{updateParams.worker}
+        WHERE ID = #{updateParams.id}
+    </update>
+
+
+    <select id="ocrManageListPage" resultType="kr.co.chunjae.ocrplatform.dto.ocrstate.OcrListResponseDTO">
+        SELECT PAPER.ID,
+               PAPER.PAST_YEAR,
+               CASE PAPER.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END EXAM_TYPE,
+               PAPER.PAST_MONTH,
+               PAPER.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPER.EXAM_NAME,
+               IFNULL(MEMBER.NAME, '-') as NAME,
+               PAPER.CREATE_DATE,
+               PAPER.ITEM_CNT,
+               IFNULL(OCR.OCR_OK, 0) as OCR_OK
+        FROM tb_paper PAPER
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPER.SUBJECT_ID = SUBJECT.ID
+        LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+                   ON PAPER.ID = OCR.PAPER_ID
+        LEFT JOIN tb_member MEMBER
+        ON PAPER.WORKER = MEMBER.ID
+        WHERE 1=1
+        <if test="manageParams.year != null and manageParams.year != ''">
+            AND PAPER.PAST_YEAR = #{manageParams.year}
+        </if>
+        <if test="manageParams.month != null and manageParams.month != ''">
+            AND PAPER.PAST_MONTH = #{manageParams.month}
+        </if>
+        <if test="manageParams.grade != null and manageParams.grade != ''">
+            AND PAPER.GRADE = #{manageParams.grade}
+        </if>
+        <if test="manageParams.examTypes != null and !manageParams.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="manageParams.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="manageParams.searchOption == 'all'">
+            AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{manageParams.searchText}, '%')
+            OR NAME LIKE CONCAT('%', #{manageParams.searchText}, '%'))
+        </if>
+        <if test="manageParams.searchOption == 'paperName'">
+            AND PAPER.EXAM_NAME LIKE CONCAT('%', #{manageParams.searchText}, '%')
+        </if>
+        <if test="manageParams.searchOption == 'registrant'">
+            AND NAME LIKE CONCAT('%', #{manageParams.searchText}, '%')
+        </if>
+        <if test="manageParams.area != null and manageParams.area != ''">
+            AND SUBJECT.AREA = #{manageParams.area}
+        </if>
+        <if test="manageParams.subject != null and manageParams.subject != ''">
+            AND SUBJECT.SUBJECT = #{manageParams.subject}
+        </if>
+        ORDER BY PAPER.ID DESC
+        LIMIT #{manageParams.pageSize} OFFSET #{manageParams.offset}
+    </select>
+
+
+    <select id="ocrExcelMangeData" resultType="kr.co.chunjae.ocrplatform.dto.ocrstate.OcrExcelSaveDTO">
+        SELECT PAPER.ID,
+               PAPER.PAST_YEAR,
+               CASE PAPER.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END EXAM_TYPE,
+               PAPER.PAST_MONTH,
+               PAPER.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPER.EXAM_NAME,
+               IFNULL(MEMBER.NAME, '-') as NAME,
+               PAPER.CREATE_DATE,
+               PAPER.ITEM_CNT,
+               IFNULL(OCR.OCR_OK, 0) as OCR_OK
+        FROM tb_paper PAPER
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPER.SUBJECT_ID = SUBJECT.ID
+        LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+        ON PAPER.ID = OCR.PAPER_ID
+        LEFT JOIN tb_member MEMBER
+        ON PAPER.WORKER = MEMBER.ID
+        WHERE 1=1
+        <if test="excelManageData.year != null and excelManageData.year != ''">
+            AND PAPER.PAST_YEAR = #{excelManageData.year}
+        </if>
+        <if test="excelManageData.month != null and excelManageData.month != ''">
+            AND PAPER.PAST_MONTH = #{excelManageData.month}
+        </if>
+        <if test="excelManageData.grade != null and excelManageData.grade != ''">
+            AND PAPER.GRADE = #{excelManageData.grade}
+        </if>
+        <if test="excelManageData.examTypes != null and !excelManageData.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="excelManageData.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="excelManageData.searchOption == 'all'">
+            AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{excelManageData.searchText}, '%')
+            OR NAME LIKE CONCAT('%', #{excelManageData.searchText}, '%'))
+        </if>
+        <if test="excelManageData.searchOption == 'paperName'">
+            AND PAPER.EXAM_NAME LIKE CONCAT('%', #{excelManageData.searchText}, '%')
+        </if>
+        <if test="excelManageData.searchOption == 'registrant'">
+            AND NAME LIKE CONCAT('%', #{excelManageData.searchText}, '%')
+        </if>
+        <if test="excelManageData.area != null and excelManageData.area != ''">
+            AND SUBJECT.AREA = #{excelManageData.area}
+        </if>
+        <if test="excelManageData.subject != null and excelManageData.subject != ''">
+            AND SUBJECT.SUBJECT = #{excelManageData.subject}
+        </if>
+        ORDER BY PAPER.ID ASC
+    </select>
+
+
+    <select id="totalCntOcrManage" resultType="kr.co.chunjae.ocrplatform.dto.common.TotalCounts">
+        SELECT COUNT(*) as TOTAL_COUNT
+        FROM(SELECT PAPER.ID,
+                    PAPER.PAST_YEAR,
+                    CASE PAPER.EXAM_TYPE
+                    WHEN 1 THEN '모의평가'
+                    WHEN 2 THEN '학력평가'
+                    ELSE '수능'
+                    END EXAM_TYPE,
+                    PAPER.PAST_MONTH,
+                    PAPER.GRADE,
+                    SUBJECT.AREA,
+                    SUBJECT.SUBJECT,
+                    PAPER.EXAM_NAME,
+                    IFNULL(MEMBER.NAME, '-') as NAME,
+                    PAPER.CREATE_DATE,
+                    PAPER.ITEM_CNT,
+                    IFNULL(OCR.OCR_OK, 0) as OCR_OK
+            FROM tb_paper PAPER
+            LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+            FROM tb_subject SUBA
+            LEFT JOIN tb_subject SUBB
+            ON SUBA.PARENT_ID = SUBB.ID
+            WHERE SUBB.NAME IS NOT NULL) SUBJECT
+            ON PAPER.SUBJECT_ID = SUBJECT.ID
+            LEFT JOIN (SELECT PAPER_ID, COUNT(PAPER_ID) AS OCR_OK
+                       FROM tb_item
+                       WHERE OCR_PROGRESS = 1
+                       GROUP BY PAPER_ID) OCR
+            ON PAPER.ID = OCR.PAPER_ID
+            LEFT JOIN tb_member MEMBER
+            ON PAPER.WORKER = MEMBER.ID
+            WHERE 1=1
+            <if test="countData.year != null and countData.year != ''">
+                AND PAPER.PAST_YEAR = #{countData.year}
+            </if>
+            <if test="countData.month != null and countData.month != ''">
+                AND PAPER.PAST_MONTH = #{countData.month}
+            </if>
+            <if test="countData.grade != null and countData.grade != ''">
+                AND PAPER.GRADE = #{countData.grade}
+            </if>
+            <if test="countData.examTypes != null and !countData.examTypes.isEmpty()">
+                AND EXAM_TYPE IN
+                <foreach item="type" collection="countData.examTypes" open="(" separator="," close=")">
+                    #{type}
+                </foreach>
+            </if>
+            <if test="countData.searchOption == 'all'">
+                AND (PAPER.EXAM_NAME LIKE CONCAT('%', #{countData.searchText}, '%')
+                OR NAME LIKE CONCAT('%', #{countData.searchText}, '%'))
+            </if>
+            <if test="countData.searchOption == 'paperName'">
+                AND PAPER.EXAM_NAME LIKE CONCAT('%', #{countData.searchText}, '%')
+            </if>
+            <if test="countData.searchOption == 'registrant'">
+                AND NAME LIKE CONCAT('%', #{countData.searchText}, '%')
+            </if>
+            <if test="countData.area != null and countData.area != ''">
+                AND SUBJECT.AREA = #{countData.area}
+            </if>
+            <if test="countData.subject != null and countData.subject != ''">
+                AND SUBJECT.SUBJECT = #{countData.subject}
+            </if>
+            ) AS listOcr
+    </select>
+    
+    <select id="workerId" resultType="kr.co.chunjae.ocrplatform.dto.ocrstate.WorkerResponseDTO">
+        SELECT PAPER.WORKER AS WORKER, IFNULL(OCR.OCR_OK/PAPER.ITEM_CNT, 0) AS OCR_COMPLETE
+        FROM tb_paper PAPER
+        LEFT JOIN (SELECT PAPER_ID, COUNT(OCR_RESULT) AS OCR_OK
+                   FROM tb_item
+                   WHERE OCR_PROGRESS = 1
+                   GROUP BY PAPER_ID) OCR
+        ON PAPER.ID = OCR.PAPER_ID
+        WHERE ID = #{id}
+    </select>
+
+    <update id="deleteWorker" parameterType="kr.co.chunjae.ocrplatform.dto.ocrstate.WorkerDTO">
+        UPDATE tb_paper SET WORKER = NULL WHERE id = #{id}
+    </update>
+</mapper>

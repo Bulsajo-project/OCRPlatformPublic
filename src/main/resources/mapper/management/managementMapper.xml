@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.management.ManagementMapper">
+
+    <!-- 사용자 계정 추가 -->
+    <insert id="saveMember" parameterType="MemberDTO">
+        INSERT INTO tb_member
+        (department, name, login_id, start_date, end_date, status, role, create_date, creator, password, login_flag)
+        SELECT
+            #{department}, #{name}, #{loginId}, #{startDate}, #{endDate}, 0, #{role}, now(), #{creator}, #{password}, 0
+        FROM DUAL
+        WHERE EXISTS (
+            SELECT 1
+            FROM tb_member
+            WHERE id = #{creator} AND role = 1
+        )
+    </insert>
+
+    <!-- 비밀번호 초기화 -->
+    <update id="resetPassword">
+        UPDATE tb_member
+        SET password=#{password}, login_flag=#{loginFlag}, updater=#{updater}, update_date=now()
+        WHERE id=#{id}
+    </update>
+
+    <!-- 계정 비활성화 -->
+    <update id="updateMember">
+        UPDATE tb_member
+        SET status=1, delete_date=now(), deleter=#{deleter}
+        WHERE id=#{id}
+    </update>
+
+    <!-- 계정 불러오기 -->
+    <select id="getAccountList" parameterType="PageDTO" resultType="hashmap">
+        SELECT CAST(@rownum := @rownum + 1 AS SIGNED) AS num,
+            id, name, login_id, DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date, DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date, password,
+        (CASE
+            WHEN department=1 THEN '디지털사업부'
+            WHEN department=2 THEN '천재교육'
+            WHEN department=3 THEN '천재교과서'
+        END) AS department,
+        (CASE
+            WHEN role=1 THEN '총괄관리자'
+            WHEN role=2 THEN '수집담당자'
+            WHEN role=3 THEN '문제운영자'
+            WHEN role=4 THEN '문제검수자'
+        END) AS role,
+        (CASE
+            WHEN status=0 THEN '활성'
+            WHEN status=1 THEN '비활성'
+        END) AS status
+        FROM tb_member, (SELECT @rownum := 0) r
+        <if test='searchType != null and searchType != 0'>
+            <choose>
+                <when test = "searchType == 1">
+                    WHERE name LIKE concat('%', #{keyword}, '%')
+                </when>
+                <when test = "searchType == 2">
+                    WHERE login_id LIKE concat('%', #{keyword}, '%')
+                </when>
+            </choose>
+        </if>
+        ORDER BY num DESC
+        limit #{postsPerPage} offset #{offset}
+    </select>
+
+    <!-- 계정 Count -->
+    <select id="accountCountById" resultType="int" parameterType="MemberDTO">
+        SELECT count(id)
+        FROM tb_member
+        <if test='searchType != null and searchType != 0'>
+            <choose>
+                <when test = "searchType == 1">
+                    WHERE name LIKE concat('%', #{keyword}, '%')
+                </when>
+                <when test = "searchType == 2">
+                    WHERE login_id LIKE concat('%', #{keyword}, '%')
+                </when>
+            </choose>
+        </if>
+    </select>
+
+    <!--loginId 중복확인-->
+    <select id="checkLoginId" parameterType="String" resultType="int">
+        SELECT COUNT(login_id)
+        FROM tb_member WHERE login_id=#{loginId}
+    </select>
+
+</mapper>

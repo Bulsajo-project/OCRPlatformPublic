@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.upload.UploadPaperMapper">
+    <insert id="savePaper" parameterType="uploadPaperDTO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO `tb_paper`
+        (
+            `subject_id`,
+            `past_year`,
+            `past_month`,
+            `grade`,
+            `exam_type`,
+            `exam_name`,
+            `creator`,
+            `item_cnt`)
+        VALUES
+            (
+                #{subjectId},
+                #{pastYear},
+                #{pastMonth},
+                #{grade},
+                #{examType},
+                #{examName},
+                #{creator},
+                #{itemCnt})
+    </insert>
+
+    <insert id="savePDF" parameterType="uploadPDFDTO" >
+        INSERT INTO `tb_paper_upload`
+        (
+
+            `paper_id`,
+            `path`,
+            `original_file`,
+            `upload_file`,
+            `creator`
+        )
+        VALUES
+            (
+                #{paperId},
+                #{path},
+                #{originalFile},
+                #{uploadFile},
+                #{creator}
+            )
+    </insert>
+
+    <insert id="saveItem" parameterType="uploadItemDTO" >
+        INSERT INTO `tb_item`
+        (
+            `paper_id`,
+            `creator`,
+            `create_date`,
+            `item_order`
+
+        )
+        VALUES
+            (
+                #{paperId},
+                #{creator},
+                current_timestamp(),
+                #{itemOrder}
+            )
+    </insert>
+
+    <select id="infoSubject"  resultType="uploadSubjectDTO" parameterType="uploadPaperDTO" >
+        SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+        FROM tb_subject SUBA
+                 LEFT JOIN tb_subject SUBB
+                           ON SUBA.PARENT_ID = SUBB.ID
+        WHERE SUBB.NAME IS NOT NULL
+          AND SUBA.id = #{subjectId}
+    </select>
+
+    <select id="infoPDF" resultType="uploadPaperDTO" parameterType="uploadPaperDTO">
+        SELECT `id`,
+               `subject_id`,
+               `past_year`,
+               `past_month`,
+               `grade`,
+               `exam_type`,
+               `exam_name`,
+               `creator`,
+               `item_cnt`
+        FROM  `tb_paper`
+        WHERE `id` = #{id}
+
+    </select>
+
+    <select id="infoPDFFile" resultType="uploadPDFDTO" parameterType="uploadPDFDTO">
+        SELECT
+            `id`,
+            `paper_id`,
+            `path`,
+            `original_file`,
+            `upload_file`,
+            `creator`
+        FROM  `tb_paper_upload`
+        WHERE `paper_id` = #{id}
+
+    </select>
+
+    <update id="updatePaper" parameterType="uploadPaperDTO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        UPDATE `tb_paper`
+        SET
+            `subject_id` = #{subjectId},
+            `past_year` = #{pastYear},
+            `past_month` = #{pastMonth},
+            `grade` =#{grade},
+            `exam_type` = #{examType},
+            `exam_name` = #{examName},
+            `creator` = #{creator},
+            `item_cnt` = #{itemCnt},
+            `updater` = #{updater},
+            `update_date`= current_timestamp()
+        WHERE `id` = #{id}
+    </update>
+
+    <update id="updatePDFFile" parameterType="uploadPDFDTO">
+        UPDATE `tb_paper_upload`
+        SET
+            `paper_id` = #{paperId},
+            `path` = #{path},
+            `original_file` = #{originalFile},
+            `upload_file` = #{uploadFile},
+            `creator` = #{creator},
+            `updater` = #{updater},
+            `update_date`= current_timestamp()
+        WHERE `paper_id` = #{id}
+    </update>
+
+    <delete id="deletePaper" parameterType="uploadPaperDTO">
+        DELETE FROM `tb_paper`
+        WHERE `id` = #{id}
+    </delete>
+
+    <delete id="deletePDF" parameterType="uploadPDFDTO">
+        DELETE FROM `tb_paper_upload`
+        WHERE `paper_id` = #{id}
+    </delete>
+
+
+    <delete id="deleteItem" parameterType="uploadPDFDTO">
+        DELETE FROM `tb_item`
+        WHERE `paper_id` = #{id}
+    </delete>
+
+
+    <select id="infoStatus" resultType="uploadPaperDTO" parameterType="uploadPaperDTO">
+        SELECT
+            `status`
+        FROM  `tb_paper`
+        WHERE `id` = #{id}
+    </select>
+</mapper>

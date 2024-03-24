@@ -1,0 +1,98 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "release" ]
+#  pull_request:
+#    branches: [ "release" ]
+
+# 직접 추가
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Set Yaml
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: ./src/main/resources/application.yml 
+      env:
+        spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
+        spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
+        spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
+        custom.path.upload: ${{ secrets.CUSTOM_PATH }}
+        jwt.clovaOCR.apiURL: ${{ secrets.CLOVA_URL }}
+        jwt.clovaOCR.secretKey: ${{ secrets.CLOVA_KEY }}
+        jwt.mathpix.url: ${{ secrets.MATHPIX_URL }}
+        jwt.mathpix.app_id: ${{ secrets.MATHPIX_ID }}
+        jwt.mathpix.app_key: ${{ secrets.MATHPIX_KEY }}
+
+      # 권한 변경
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
+
+    # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
+    # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build
+
+    # 아티팩트 업로드
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: projectWar        # Artifact 이름
+        path: build/libs/*.war  # 폴더 지정: 이 폴더 아래의 모든 파일들이 하나의 artifact로 저장된다.
+
+    # ec2로 scp를 통한 war 파일 전송
+    - name: copy war via SCP
+      uses: appleboy/scp-action@v0.1.7
+      with:
+          host: ${{ secrets.SSH_ADDR }} # 퍼블릭 IPv4 DNS
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PEM_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "build/libs/*.war"
+          target: ${{ secrets.TARGET_DIR }}
+          rm: true
+
+    # ec2 ssh 연결
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      env: 
+        TOMCAT_PATH: ${{ secrets.TOMCAT_PATH }}
+        TARGET_DIR: ${{ secrets.TARGET_DIR }}
+      with:
+        host: ${{ secrets.SSH_ADDR }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PEM_KEY }}
+        port: ${{ secrets.PORT }}
+        envs: TOMCAT_PATH, TARGET_DIR
+        script: |
+          sudo $TOMCAT_PATH/bin/shutdown.sh
+          sudo cp $TARGET_DIR/build/libs/*SNAPSHOT.war $TOMCAT_PATH/webapps
+          sudo $TOMCAT_PATH/bin/startup.sh
+
+# sudo cp $TARGET_DIR/build/libs/*.war $TOMCAT_PATH/webapps

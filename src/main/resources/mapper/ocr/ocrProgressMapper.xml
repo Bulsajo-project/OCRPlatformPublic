@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.ocr.OcrProgressMapper">
+
+    <!-- item 테이블 업데이트 -->
+    <update id="updateItem" parameterType="java.util.Map">
+        UPDATE tb_item
+        SET ocr_result= #{ocrResult},
+            ocr_progress= 1,
+            updater= #{updater},
+            update_date=current_timestamp()
+        WHERE id= #{id}
+    </update>
+
+    <!-- tb_item_image에 정보 insert -->
+    <insert id="insertItemImage" parameterType="OcrItemImageDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tb_item_image
+            (item_id,
+             `path`,
+             original_file,
+             upload_file,
+             creator,
+             create_date,
+             updater,
+             update_date,
+             image_type)
+        VALUES(
+               #{itemId},
+               #{path},
+               '',
+               #{uploadFile},
+               #{creator},
+               current_timestamp(),
+               #{updater},
+               current_timestamp(),
+               #{imageType})
+    </insert>
+
+    <!-- tb_item_image에 기존 정보 delete -->
+    <delete id="deleteItemImage" parameterType="Long">
+        DELETE
+        FROM tb_item_image
+        WHERE item_id= #{itemId}
+    </delete>
+
+    <!-- paper정보 조회 -->
+    <select id="selectPaper" resultType="OcrPaperViewDTO">
+        SELECT PAPERTB.ID,
+            PAPERTB.PAST_YEAR,
+            CASE PAPERTB.EXAM_TYPE
+                WHEN 1 THEN '모의평가'
+                WHEN 2 THEN '학력평가'
+                ELSE '수능'
+                END AS EXAM_TYPE,
+            PAPERTB.PAST_MONTH,
+            PAPERTB.GRADE,
+            SUBJECT.AREA,
+            SUBJECT.SUBJECT,
+            PAPERTB.EXAM_NAME,
+            PAPERTB.CREATOR,
+            PAPERTB.CREATE_DATE
+        FROM
+            (SELECT PAPER.ID,
+                    PAPER.SUBJECT_ID,
+                    PAPER.PAST_YEAR,
+                    PAPER.PAST_MONTH,
+                    PAPER.GRADE,
+                    PAPER.EXAM_TYPE,
+                    PAPER.EXAM_NAME,
+                    MEMBER.NAME AS CREATOR,
+                    PAPER.CREATE_DATE
+            FROM tb_paper PAPER
+            LEFT JOIN tb_member MEMBER
+                ON PAPER.CREATOR = MEMBER.ID
+            ) PAPERTB
+        LEFT JOIN
+                (SELECT SUBA.ID,
+                        SUBB.NAME AS AREA,
+                        SUBA.NAME AS SUBJECT
+                FROM tb_subject SUBA
+                LEFT JOIN tb_subject SUBB
+                    ON SUBA.PARENT_ID = SUBB.ID
+                WHERE SUBB.NAME IS NOT NULL
+                ) SUBJECT
+            ON PAPERTB.SUBJECT_ID = SUBJECT.ID
+        WHERE PAPERTB.ID=#{id}
+    </select>
+
+    <!-- pdf 경로, 파일명 조회 -->
+    <select id="selectPdfPath" parameterType="Long" resultType="java.util.Map">
+        SELECT
+            path,
+            upload_file
+        FROM tb_paper_upload
+        WHERE paper_id = #{paperId}
+    </select>
+
+    <!--아이템(문항) 개수 조회 -->
+    <select id="selectCountItem" parameterType="Long" resultType="int">
+        SELECT count(*)
+        FROM tb_item
+        WHERE paper_id = #{paperId}
+    </select>
+
+    <!-- 아이템(문항) 정보 조회 -->
+    <select id="selectOcrItemByOrder" resultType="java.util.Map">
+        SELECT id, ocr_result
+        FROM tb_item
+        WHERE paper_id = #{paperId}
+            AND item_order = #{itemOrder}
+    </select>
+
+    <!-- 아이템(문항) 이미지 경로 조회 -->
+    <select id="selectItemImgList" parameterType="Long" resultType="java.util.Map">
+        SELECT image_type, concat(path, upload_file) as image_path
+        FROM tb_item_image
+        WHERE item_id = #{itemId}
+        ORDER BY id
+    </select>
+
+    <!-- tb_paper status 업데이트 -->
+    <update id="updatePaperStatus" parameterType="Long">
+        UPDATE tb_paper
+        SET status= 1
+        WHERE id = #{paperId}
+          and status = 0
+    </update>
+
+
+    <!-- 작업 로그 기록 -->
+    <insert id="insertOperationLog">
+        INSERT INTO tb_operation_log
+        (member_id,
+         item_id)
+        VALUES(
+                  #{memberId},
+                  #{itemId})
+    </insert>
+
+    <!-- 시험지 담당자 조회 -->
+    <select id="selectPaperWorker" parameterType="Long" resultType="Long">
+        SELECT worker
+        FROM tb_paper
+        WHERE id = #{paperId}
+    </select>
+</mapper>

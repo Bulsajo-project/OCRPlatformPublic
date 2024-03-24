@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.paper.PaperMapper">
+
+    <select id="paperListPage" resultType="kr.co.chunjae.ocrplatform.dto.paper.PaperListResponseDTO">
+        SELECT PAPERTB.ID,
+               PAPERTB.PAST_YEAR,
+               CASE PAPERTB.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END AS EXAM_TYPE,
+               PAPERTB.PAST_MONTH,
+               PAPERTB.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPERTB.EXAM_NAME,
+               PAPERTB.CREATOR,
+               PAPERTB.CREATE_DATE
+        FROM (SELECT PAPER.ID, PAPER.SUBJECT_ID, PAPER.PAST_YEAR, PAPER.PAST_MONTH, PAPER.GRADE, PAPER.EXAM_TYPE, PAPER.EXAM_NAME, MEMBER.NAME AS CREATOR, PAPER.CREATE_DATE
+              FROM tb_paper PAPER
+              LEFT JOIN tb_member MEMBER
+              ON PAPER.CREATOR = MEMBER.ID) PAPERTB
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPERTB.SUBJECT_ID = SUBJECT.ID
+        WHERE 1=1
+        <if test="params.year != null and params.year != ''">
+            AND PAPERTB.PAST_YEAR = #{params.year}
+        </if>
+        <if test="params.month != null and params.month != ''">
+            AND PAPERTB.PAST_MONTH = #{params.month}
+        </if>
+        <if test="params.grade != null and params.grade != ''">
+            AND PAPERTB.GRADE = #{params.grade}
+        </if>
+        <if test="params.examTypes != null and !params.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="params.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="params.searchOption == 'all'">
+            AND (PAPERTB.EXAM_NAME LIKE CONCAT('%', #{params.searchText}, '%')
+            OR PAPERTB.CREATOR LIKE CONCAT('%', #{params.searchText}, '%'))
+        </if>
+        <if test="params.searchOption == 'paperName'">
+            AND PAPERTB.EXAM_NAME LIKE CONCAT('%', #{params.searchText}, '%')
+        </if>
+        <if test="params.searchOption == 'registrant'">
+            AND PAPERTB.CREATOR LIKE CONCAT('%', #{params.searchText}, '%')
+        </if>
+        <if test="params.area != null and params.area != ''">
+            AND SUBJECT.AREA = #{params.area}
+        </if>
+        <if test="params.subject != null and params.subject != ''">
+            AND SUBJECT.SUBJECT = #{params.subject}
+        </if>
+        ORDER BY PAPERTB.ID DESC
+        LIMIT #{params.pageSize} OFFSET #{params.offset}
+    </select>
+
+
+    <select id="totalCnt" resultType="kr.co.chunjae.ocrplatform.dto.common.TotalCounts">
+        SELECT COUNT(*) as TOTAL_COUNT
+        FROM (SELECT PAPERTB.ID,
+                     PAPERTB.PAST_YEAR,
+                     CASE PAPERTB.EXAM_TYPE
+                     WHEN 1 THEN '모의평가'
+                     WHEN 2 THEN '학력평가'
+                     ELSE '수능'
+                     END AS EXAM_TYPE,
+                     PAPERTB.PAST_MONTH,
+                     PAPERTB.GRADE,
+                     SUBJECT.AREA,
+                     SUBJECT.SUBJECT,
+                     PAPERTB.EXAM_NAME,
+                     PAPERTB.CREATOR,
+                     PAPERTB.CREATE_DATE
+        FROM (SELECT PAPER.ID, PAPER.SUBJECT_ID, PAPER.PAST_YEAR, PAPER.PAST_MONTH, PAPER.GRADE, PAPER.EXAM_TYPE, PAPER.EXAM_NAME, MEMBER.NAME AS CREATOR, PAPER.CREATE_DATE
+              FROM tb_paper PAPER
+              LEFT JOIN tb_member MEMBER
+              ON PAPER.CREATOR = MEMBER.ID) PAPERTB
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPERTB.SUBJECT_ID = SUBJECT.ID
+        WHERE 1=1
+        <if test="data.year != null and data.year != ''">
+            AND PAPERTB.PAST_YEAR = #{data.year}
+        </if>
+        <if test="data.month != null and data.month != ''">
+            AND PAPERTB.PAST_MONTH = #{data.month}
+        </if>
+        <if test="data.grade != null and data.grade != ''">
+            AND PAPERTB.GRADE = #{data.grade}
+        </if>
+        <if test="data.examTypes != null and !data.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="data.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="data.searchOption == 'all'">
+            AND (PAPERTB.EXAM_NAME LIKE CONCAT('%', #{data.searchText}, '%')
+            OR PAPERTB.CREATOR LIKE CONCAT('%', #{data.searchText}, '%'))
+        </if>
+        <if test="data.searchOption == 'paperName'">
+            AND PAPERTB.EXAM_NAME LIKE CONCAT('%', #{data.searchText}, '%')
+        </if>
+        <if test="data.searchOption == 'registrant'">
+            AND PAPERTB.CREATOR LIKE CONCAT('%', #{data.searchText}, '%')
+        </if>
+        <if test="data.area != null and data.area != ''">
+            AND SUBJECT.AREA = #{data.area}
+        </if>
+        <if test="data.subject != null and data.subject != ''">
+            AND SUBJECT.SUBJECT = #{data.subject}
+        </if>
+        ) paperList
+    </select>
+
+    <select id="excelData" resultType="kr.co.chunjae.ocrplatform.dto.paper.PaperExcelSaveDTO">
+        SELECT PAPERTB.ID,
+               PAPERTB.PAST_YEAR,
+               CASE PAPERTB.EXAM_TYPE
+               WHEN 1 THEN '모의평가'
+               WHEN 2 THEN '학력평가'
+               ELSE '수능'
+               END AS EXAM_TYPE,
+               PAPERTB.PAST_MONTH,
+               PAPERTB.GRADE,
+               SUBJECT.AREA,
+               SUBJECT.SUBJECT,
+               PAPERTB.EXAM_NAME,
+               PAPERTB.CREATOR,
+               PAPERTB.CREATE_DATE
+        FROM (SELECT PAPER.ID, PAPER.SUBJECT_ID, PAPER.PAST_YEAR, PAPER.PAST_MONTH, PAPER.GRADE, PAPER.EXAM_TYPE, PAPER.EXAM_NAME, MEMBER.NAME AS CREATOR, PAPER.CREATE_DATE
+              FROM tb_paper PAPER
+              LEFT JOIN tb_member MEMBER
+              ON PAPER.CREATOR = MEMBER.ID) PAPERTB
+        LEFT JOIN (SELECT SUBA.ID, SUBB.NAME AS AREA, SUBA.NAME AS SUBJECT
+                   FROM tb_subject SUBA
+                   LEFT JOIN tb_subject SUBB
+                   ON SUBA.PARENT_ID = SUBB.ID
+                   WHERE SUBB.NAME IS NOT NULL) SUBJECT
+        ON PAPERTB.SUBJECT_ID = SUBJECT.ID
+        WHERE 1=1
+        <if test="excelData.year != null and excelData.year != ''">
+            AND PAPERTB.PAST_YEAR = #{excelData.year}
+        </if>
+        <if test="excelData.month != null and excelData.month != ''">
+            AND PAPERTB.PAST_MONTH = #{excelData.month}
+        </if>
+        <if test="excelData.grade != null and excelData.grade != ''">
+            AND PAPERTB.GRADE = #{excelData.grade}
+        </if>
+        <if test="excelData.examTypes != null and !excelData.examTypes.isEmpty()">
+            AND EXAM_TYPE IN
+            <foreach item="type" collection="excelData.examTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+        <if test="excelData.searchOption == 'all'">
+            AND (PAPERTB.EXAM_NAME LIKE CONCAT('%', #{excelData.searchText}, '%')
+            OR PAPERTB.CREATOR LIKE CONCAT('%', #{excelData.searchText}, '%'))
+        </if>
+        <if test="excelData.searchOption == 'paperName'">
+            AND PAPERTB.EXAM_NAME LIKE CONCAT('%', #{excelData.searchText}, '%')
+        </if>
+        <if test="excelData.searchOption == 'registrant'">
+            AND PAPERTB.CREATOR LIKE CONCAT('%', #{excelData.searchText}, '%')
+        </if>
+        <if test="excelData.area != null and excelData.area != ''">
+            AND SUBJECT.AREA = #{excelData.area}
+        </if>
+        <if test="excelData.subject != null and excelData.subject != ''">
+            AND SUBJECT.SUBJECT = #{excelData.subject}
+        </if>
+        ORDER BY PAPERTB.ID
+    </select>
+
+</mapper>

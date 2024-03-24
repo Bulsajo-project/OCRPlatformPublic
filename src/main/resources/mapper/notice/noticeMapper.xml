@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.chunjae.ocrplatform.mapper.notice.NoticeMapper">
+
+    <!-- 공지글 목록 -->
+    <select id="getNoticeList" resultType="java.util.HashMap">
+        SELECT tb_notice.id,
+               tb_notice.title,
+               tb_member.name,
+               tb_notice.create_date
+        FROM tb_notice LEFT JOIN tb_member
+                                 ON tb_notice.`creator`=tb_member.`id`
+        ORDER BY tb_notice.id DESC
+        LIMIT #{start}, #{pageSize}
+    </select>
+
+    <!-- 공지글 상세조회 -->
+    <select id="getNotice" parameterType="Long" resultType="java.util.HashMap">
+        SELECT tb_notice.id,
+               tb_notice.title, tb_member.name AS creatorName, tb_notice.content, tb_notice.create_date
+        FROM tb_notice LEFT JOIN tb_member
+                                 ON tb_notice.creator=tb_member.id
+        WHERE tb_notice.id=#{id}
+    </select>
+
+
+    <!-- 공지글 업데이트 -->
+    <update id="updateNotice" parameterType="kr.co.chunjae.ocrplatform.dto.notice.NoticeDTO">
+        UPDATE tb_notice
+        SET
+            title = #{title}
+          ,content = #{content}
+          ,update_date = CURRENT_TIMESTAMP()
+        WHERE id=#{id}
+    </update>
+
+    <!--    공지사항 작성-->
+    <insert id="writeNotice" parameterType="kr.co.chunjae.ocrplatform.dto.notice.NoticeDTO">
+        INSERT INTO tb_notice (creator, title, content, create_date)
+        VALUES
+        <choose>
+            <when test="creator == null">
+                ('관리자', #{title}, #{content}, CURRENT_TIMESTAMP())
+            </when>
+            <otherwise>
+                (#{creator}, #{title}, #{content}, CURRENT_TIMESTAMP())
+            </otherwise>
+        </choose>
+    </insert>
+
+    <!--    공지사항 게시글 수 불러오기 -->
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM tb_notice
+    </select>
+
+    <!--    공지사항 삭제 -->
+    <delete id="deleteNotice" parameterType="long">
+        DELETE FROM tb_notice
+        WHERE id = #{id}
+    </delete>
+
+    <!--    공지사항 검색-->
+    <select id="getSearchCount" resultType="int">
+        SELECT COUNT(*) FROM tb_notice
+        <where>
+            <if test="condition == 'title'">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="condition == 'content'">
+                AND content LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="condition == 'all'">
+                AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="searchNotice" resultType="java.util.Map">
+        SELECT
+        tb_notice.id,
+        tb_notice.title,
+        tb_notice.content,
+        tb_notice.create_date,
+        '관리자' AS creatorName
+        FROM tb_notice
+        <where>
+            <if test="condition == 'title'">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="condition == 'content'">
+                AND content LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="condition == 'all'">
+                AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY tb_notice.id DESC
+        LIMIT #{start}, #{pageSize}
+    </select>
+
+</mapper>

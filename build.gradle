@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.0.0' // 기본 버전
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'kr.co.chunjae'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // mariadb
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.7.3'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.1'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    // log4jdbc
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // jsp springboot 3.0이상
+    implementation 'jakarta.servlet:jakarta.servlet-api'
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+
+    // model mapper
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+
+    // StringUtils
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // aws core
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.641")
+
+    //PDF
+    implementation 'org.apache.pdfbox:pdfbox:2.0.13'
+    implementation 'org.apache.pdfbox:pdfbox-tools:2.0.13'
+
+    implementation("org.imgscalr:imgscalr-lib:4.2")
+    implementation("org.apache.commons:commons-lang3:3.8.1")
+    implementation('commons-io:commons-io:2.9.0')
+
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20231013'
+
+    // Apache POI
+    implementation 'org.apache.poi:poi:5.2.2'
+    implementation 'org.apache.poi:poi-ooxml:5.2.2'
+
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //xss 공격방지
+    implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1'
+
+
+}

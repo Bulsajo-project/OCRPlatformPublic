@@ -1,0 +1,54 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-form-post-size: 1000MB
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${secrets}
+    username: ${secrets}
+    password: ${secrets}
+    hikari:
+      maximum-pool-size: 5
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+    static-path-pattern: /static/**
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: true
+  servlet:
+    multipart:
+      enabled: true # 멀티파트 업로드 지원여부 (default: true)
+      file-size-threshold: 0B # 파일을 디스크에 저장하지 않고 메모리에 저장하는 최소 크기 (default: 0B)
+      max-file-size: 5MB # 한개 파일의 최대 사이즈 (default: 1MB)
+      max-request-size: 10MB # 한개 요청의 최대 사이즈 (default: 10MB)
+  messages:
+    basename: messages
+    encoding: UTF-8
+#  profiles:
+#    active: aws # 키유출 방지를 위해 yml 파일 분리
+
+mybatis:
+  mapper-locations: mapper/**/*.xml # SQL 쿼리문 작성 파일(.xml) 위치
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: kr.co.chunjae.ocrplatform.dto.* # dto 패키지 하위의 클래스 이름을 resultType의 별칭으로 사용 가능
+
+custom:
+  path:
+    upload: ${secrets}
+
+jwt:
+  clovaOCR:
+    apiURL: ${secrets}
+    secretKey: ${secrets}
+  mathpix:
+    url: ${secrets}
+    app_id: ${secrets}
+    app_key: ${secrets}
