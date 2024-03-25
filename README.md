@@ -45,6 +45,7 @@
 
 <details><summary>시험지 업로드</summary> 
 <br/>
+ 
 - 시험지등록
 
 
@@ -67,6 +68,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 
 <details><summary>OCR 변환</summary>
 <br/>
+ 
 ![image (6)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/07cf2825-8441-41ca-a751-a7923cb2139e)
  
 ### 1.  PDF 뷰어 기능
@@ -77,6 +79,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
+
 ![image (5)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/01c76425-f9b2-41e6-91e7-a630ec563ab8)
 
 ### 2. 이미지 캡쳐기능
@@ -87,6 +90,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
+
 ![image (4)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/5e8ee7a9-d910-4658-a718-e77eed5f7add)
 
 ### 3. 수식제외 텍스트 인식
@@ -97,6 +101,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
+
 ![image (3)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/9f15343a-ed4f-42f2-98c1-cccfe6f0303f)
 
 ### 4. 수식포함 텍스트 인식
