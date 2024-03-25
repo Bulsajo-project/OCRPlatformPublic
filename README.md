@@ -67,8 +67,47 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 
 <details><summary>OCR 변환</summary>
 <br/>
-
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/1db15f61-2867-47a3-b702-979bbf98c5d3/Untitled.png)
  
+### 1.  PDF 뷰어 기능
+         1. PDF 시험지 파일 시험지 미리보기 로드
+         2. 페이지 이동 가능
+         3. 확대, 축소 가능
+
+<br>
+<br>
+<br>
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/98188ec6-ffb0-4665-a557-ba9136320bc6/Untitled.png)
+
+### 2. 이미지 캡쳐기능
+    1. 캡쳐시작시  dim 처리
+    2. 마우스 UP시 우측 목록에 이미지 추가됨
+
+
+<br>
+<br>
+<br>
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/39915b58-1188-47ad-b43a-b441a0e9f6fd/Untitled.png)
+
+### 3. 수식제외 텍스트 인식
+    1. 수학과목이 아닌경우, 텍스트를 인식, 결과가 병합되어 하단 출력
+    2. 각 이미지별 OCR 대상 여부 지정가능
+    3. 결과 편집가능
+
+<br>
+<br>
+<br>
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/09a6ae7e-80e0-4027-b6ee-65f2b0dc8a2a/Untitled.png)
+
+### 4. 수식포함 텍스트 인식
+    1. 수학 과목인 경우, 수식을 인식, 결과가 병합되어 하단 출력
+    2. 각 이미지별 OCR 대상 여부 지정가능
+    3. 결과 편집가능
+
+
+<br>
+<br>
+<br>
 </details>
  
 <details><summary>리스트 관리</summary>
