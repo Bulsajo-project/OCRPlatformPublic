@@ -114,16 +114,25 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br/>
 
 1. 수능/학력평가 시험지 관리
+   - 등록된 시험지의 리스트를 확인
+   - 여러 조건들을 통해 원하는 리스트를 검색 및 엑셀 파일로 다운
+   - 시험지 명을 클릭하면 수정 페이지로 이동
    
 https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/52060ed4-858b-493c-9f60-49b84a1d7c16
 
 
 2. OCR 변환 관리
 
+   - OCR 작업 현황 (작업중/작업완료) 확인
+   - 권한이 있을 경우 시험지 명을 클릭 시 담장자를 배정 받을 수 있음 (3:문제운영자 담당자 배정)
+   - 여러 조건들을 통해 원하는 리스트를 검색 및 엑셀 파일로 다운
+
 https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/9d75fee6-8bc6-4f3f-a294-f6108e28a230
 
 3. 작업 현황 관리
 
+   - 총괄 관리자 로그인 시 접근 가능하며, 전체 시험지의 OCR 현황을 관리할 수 있음
+   - 배정된 담당자가 있을 경우 담당자를 클릭 시 취소 할 수 있음
 
 https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/5a18dee1-1203-4998-9df5-daf9170667cc
 
