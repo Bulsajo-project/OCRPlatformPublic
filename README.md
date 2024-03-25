@@ -120,6 +120,47 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <details><summary>사용자 관리</summary>
 <br/>
 
+1. [시스템관리 - 사용자관리] 사이트를 이용할 수 있는 계정을 관리할 수 있습니다.
+
+ 총괄관리자만 관리가능하며 [소속부서/이름/아이디/권한/사용기간/계정상태]를 확인할 수 있습니다.
+
+![Untitled (1)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963612/758d2b7e-08a0-4f24-9fb5-cf1c737b5219)
+
+1. **계정 추가**
+
+[추가] 버튼을 클릭하면 1개의 계정을 추가할 수 있습니다.
+
+[소속부서/이름/아이디/권한/사용기간] 은 필수로 입력해야합니다.
+
+- 이름 : 공백/특수문자/숫자를 제외한 2~8자리
+- 아이디 : 공백제외 알파벳 대소문자/숫자 3~10자리
+- 사용기간 : 종료일이 시작일보다 이전일 수 없음
+
+ 사용기간은 시작일은 오늘날짜로 종료일은 오늘날짜보다 1년 뒤로 자동설정 되어있습니다.
+
+![Untitled (2)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963612/f1943aa5-fc9b-4b94-919b-465e00a7aac4)
+
+1. **비밀번호 초기화**
+
+비밀번호 초기화 버튼 클릭 시 비밀번호 초기화 alert이 발생됩니다.
+
+해당 계정의 비밀번호는 아이디와 동일하게 설정됩니다.
+
+![Untitled (3)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963612/ca14bae0-45ca-4bce-8896-9e894c979a18)
+
+1. **계정 삭제** 
+
+관리-삭제 버튼 클릭 시 계정상태가 비활성화로 변경되며 해당 계정은 로그인이 불가합니다.
+
+![Untitled (4)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963612/2d7c2b95-ae78-4622-8cfe-09ebc892fe2e)
+
+1. **계정 검색**
+
+검색조건은 [이름/아이디] 2개로 나뉘어져있으며 검색 시 해당하는 계정 리스트만 확인이 가능합니다.
+
+![Untitled (5)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963612/4f88327e-27d7-4971-85cd-24ea4319af7c)
+
+
 </details>
 
 
