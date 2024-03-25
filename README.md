@@ -67,7 +67,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 
 <details><summary>OCR 변환</summary>
 <br/>
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/1db15f61-2867-47a3-b702-979bbf98c5d3/Untitled.png)
+![image (6)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/07cf2825-8441-41ca-a751-a7923cb2139e)
  
 ### 1.  PDF 뷰어 기능
          1. PDF 시험지 파일 시험지 미리보기 로드
@@ -77,7 +77,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/98188ec6-ffb0-4665-a557-ba9136320bc6/Untitled.png)
+![image (5)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/01c76425-f9b2-41e6-91e7-a630ec563ab8)
 
 ### 2. 이미지 캡쳐기능
     1. 캡쳐시작시  dim 처리
@@ -87,7 +87,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/39915b58-1188-47ad-b43a-b441a0e9f6fd/Untitled.png)
+![image (4)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/5e8ee7a9-d910-4658-a718-e77eed5f7add)
 
 ### 3. 수식제외 텍스트 인식
     1. 수학과목이 아닌경우, 텍스트를 인식, 결과가 병합되어 하단 출력
@@ -97,7 +97,7 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <br>
 <br>
 <br>
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/27608227-45fe-4378-a4b3-624d8f797bcc/09a6ae7e-80e0-4027-b6ee-65f2b0dc8a2a/Untitled.png)
+![image (3)](https://github.com/Bulsajo-project/OCRPlatformPublic/assets/108727190/9f15343a-ed4f-42f2-98c1-cccfe6f0303f)
 
 ### 4. 수식포함 텍스트 인식
     1. 수학 과목인 경우, 수식을 인식, 결과가 병합되어 하단 출력
