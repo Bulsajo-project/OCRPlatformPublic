@@ -45,8 +45,24 @@
 
 <details><summary>시험지 업로드</summary> 
 <br/>
+- 시험지등록
 
+
+https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/5893ba67-85f4-4947-913d-71e1f6f3e641
+
+
+- 시험지 수정
+
+
+https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/9b38c373-2997-4c29-b488-94f1bcc98d11
+
+
+- OCR작업중
  
+
+https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40eb-982c-35bcf125cc4f
+
+
 </details>
 
 <details><summary>OCR 변환</summary>
@@ -70,8 +86,66 @@
 
 <details><summary>공지사항 관리</summary>
 <br/>
+ 
+### 1. 게시글 작성
+ 
+![스크린샷 2024-03-23 212756](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/b9596187-405d-477d-a4ca-fcbd0c2d77da)
 
+* 오직 '총괄 관리자' 만이 게시글 작성 권한을 가집니다.
+* 제목은 50자 이내, 내용은 500자 이내로 작성이 가능합니다.
 
+<br>
+<br>
+<br>
+
+### 2. 게시글 목록 보기
+
+![스크린샷 2024-03-24 221637](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/51db2346-f52c-417b-b818-200541fe18b3)
+
+* 게시판 목록은 모든 권한의 사용자가 접근 가능합니다.
+* '글쓰기' 기능은 '총괄 관리자'로 로그인 했을 시에만 접근 가능합니다.
+* 목록은 한 페이지당 10개의 게시글을 표시하는 페이징 기능이 있습니다.
+* 게시글을 클릭하면 상세보기 창으로 이동합니다.
+
+<br>
+<br>
+
+![스크린샷 2024-03-22 211526](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/9ae1540c-f13c-410c-a8c0-d87d4c5fff7c)
+
+* 등록된 게시물이 없으면 문구가 표시됩니다.
+
+<br>
+<br>
+<br>
+
+### 3. 게시글 상세보기 및 수정, 삭제
+
+![스크린샷 2024-03-23 212810](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/4ae47db9-5dc7-4408-bde8-8563574b9526)
+
+* 상세 보기 시 '수정', '삭제' 기능은 '총괄 관리자'로 로그인 했을 시에만 접근 가능합니다.
+* '수정', '삭제', '목록' 버튼을 누르면 'alert' 팝업이 표시됩니다.
+
+<br>
+<br>
+<br>
+
+ 
+### 4. 게시글 검색 기능
+
+![2024-03-23 21 29 21](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/4b905493-6555-4542-818b-063d37b27559)
+
+* 사용자는 '전체', '제목', '내용'의 세 가지의 조건 중 선택하여 키워드를 입력해서 검색할 수 있습니다.
+
+<br>
+<br>
+
+![스크린샷 2024-03-24 234532](https://github.com/Bulsajo-project/OCRPlatform/assets/145963611/bdd7d5f8-513e-458d-8667-742345a9b3f2)
+
+* 검색 시 키워드에 맞는 게시물이 없으면 목록에 알림 문구가 표시됩니다.
+
+<br>
+<br>
+<br>
 
 </details>
 
