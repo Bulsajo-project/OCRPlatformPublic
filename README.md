@@ -113,6 +113,21 @@ https://github.com/Bulsajo-project/OCRPlatform/assets/145524959/76e2d57d-2e2d-40
 <details><summary>리스트 관리</summary>
 <br/>
 
+1. 수능/학력평가 시험지 관리
+   
+https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/52060ed4-858b-493c-9f60-49b84a1d7c16
+
+
+2. OCR 변환 관리
+
+https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/9d75fee6-8bc6-4f3f-a294-f6108e28a230
+
+3. 작업 현황 관리
+
+
+https://github.com/Bulsajo-project/OCRPlatformPublic/assets/145963790/5a18dee1-1203-4998-9df5-daf9170667cc
+
+
  
 </details>
 
